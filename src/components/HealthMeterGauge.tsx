@@ -49,10 +49,10 @@ export const HealthMeterGauge: React.FC<HealthMeterGaugeProps> = ({
         <div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold tracking-wider uppercase text-slate-400">
-              Composite Health Meter
+              PulseFit Vitality Meter
             </span>
             <span className="text-[10px] text-slate-500">·</span>
-            <span className="text-[11px] text-slate-400">Wearable Calibrated</span>
+            <span className="text-[11px] text-slate-400">Lifestyle Index (Non-Medical)</span>
           </div>
           <h3 className="text-lg font-bold text-white tracking-tight">Daily Vitality Score</h3>
         </div>
@@ -225,7 +225,7 @@ export const HealthMeterGauge: React.FC<HealthMeterGaugeProps> = ({
           onClick={onExploreBreakdown}
           className="mt-3 w-full py-2 text-center text-xs font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
         >
-          View Full Clinical Breakdown & Weighting →
+          View Vitality Breakdown & Weighting →
         </button>
       )}
     </div>

@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
-import { FoodItem } from '../types/health';
+import { FoodItem, AdSenseConfig } from '../types/health';
 import { Flame, Plus, Trash2, Droplets, Utensils, Apple, Coffee, Search, Check } from 'lucide-react';
+import { MetabolicFuelWidget } from './MetabolicFuelWidget';
+import { AdSenseBanner } from './AdSenseBanner';
 
 interface CalorieTrackerViewProps {
   budgetKcal: number;
   activeBurnedKcal: number;
+  cadenceSpm?: number;
   meals: FoodItem[];
   waterIntakeMl: number;
   waterGoalMl: number;
+  adsenseConfig?: AdSenseConfig;
+  onOpenAdManager?: () => void;
   onAddMeal: (meal: Omit<FoodItem, 'id' | 'timeLogged'>) => void;
   onDeleteMeal: (mealId: string) => void;
   onAddWater: (ml: number) => void;
@@ -27,9 +32,12 @@ const PRESET_FOODS = [
 export const CalorieTrackerView: React.FC<CalorieTrackerViewProps> = ({
   budgetKcal,
   activeBurnedKcal,
+  cadenceSpm = 115,
   meals,
   waterIntakeMl,
   waterGoalMl,
+  adsenseConfig,
+  onOpenAdManager,
   onAddMeal,
   onDeleteMeal,
   onAddWater,
@@ -198,6 +206,12 @@ export const CalorieTrackerView: React.FC<CalorieTrackerViewProps> = ({
         </div>
       </div>
 
+      {/* DISTINCTIVE FEATURE: Metabolic Fuel Partitioning (Fat vs Glycogen Burn) */}
+      <MetabolicFuelWidget
+        activeCaloriesBurned={activeBurnedKcal}
+        cadenceSpm={cadenceSpm}
+      />
+
       {/* Hydration Tracker */}
       <div className="rounded-3xl bg-slate-900 border border-slate-800 p-5 shadow-xl">
         <div className="flex items-center justify-between">
@@ -300,6 +314,13 @@ export const CalorieTrackerView: React.FC<CalorieTrackerViewProps> = ({
           </div>
         )}
       </div>
+
+      {/* In-Article Sponsored Meal & Nutrition Unit */}
+      <AdSenseBanner
+        format="in-article"
+        config={adsenseConfig}
+        onOpenAdManager={onOpenAdManager}
+      />
 
       {/* Log Meal Modal */}
       {isAddModalOpen && (

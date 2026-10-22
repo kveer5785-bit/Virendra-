@@ -1,7 +1,24 @@
 import React from 'react';
-import { DailyActivity, HealthMeterMetrics, FoodItem, WearableDevice, HealthAppointment, ActiveTab } from '../types/health';
+import { DailyActivity, HealthMeterMetrics, FoodItem, WearableDevice, HealthAppointment, ActiveTab, AdSenseConfig } from '../types/health';
 import { HealthMeterGauge } from './HealthMeterGauge';
-import { Footprints, Flame, Calendar, Watch, ChevronRight, Plus, Play, Sparkles, Video, ArrowUpRight } from 'lucide-react';
+import { MetabolicFuelWidget } from './MetabolicFuelWidget';
+import { AdSenseBanner } from './AdSenseBanner';
+import {
+  Footprints,
+  Flame,
+  Calendar,
+  Watch,
+  ChevronRight,
+  Plus,
+  Play,
+  Sparkles,
+  Video,
+  ArrowUpRight,
+  TrendingUp,
+  Gauge,
+  Timer,
+  Dumbbell,
+} from 'lucide-react';
 
 interface DashboardViewProps {
   activity: DailyActivity;
@@ -11,8 +28,12 @@ interface DashboardViewProps {
   wearables: WearableDevice[];
   activeWearableId: string;
   appointments: HealthAppointment[];
+  adsenseConfig?: AdSenseConfig;
+  onOpenAdManager?: () => void;
   onNavigateTab: (tab: ActiveTab) => void;
   onQuickSync: () => void;
+  onOpenCadencePacer?: () => void;
+  onOpenPostMealWalk?: () => void;
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
@@ -23,11 +44,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   wearables,
   activeWearableId,
   appointments,
+  adsenseConfig,
+  onOpenAdManager,
   onNavigateTab,
   onQuickSync,
+  onOpenCadencePacer,
+  onOpenPostMealWalk,
 }) => {
-  const activeDevice = wearables.find(w => w.id === activeWearableId) || wearables[0];
-  const nextAppointment = appointments.find(a => a.status === 'confirmed');
+  const activeDevice = wearables.find((w) => w.id === activeWearableId) || wearables[0];
+  const nextAppointment = appointments.find((a) => a.status === 'confirmed');
 
   const totalCaloriesConsumed = meals.reduce((sum, m) => sum + m.calories, 0);
   const remainingCalories = budgetKcal - totalCaloriesConsumed + activity.activeCaloriesBurned;
@@ -47,14 +72,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
         <button
           onClick={onQuickSync}
-          className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1"
+          className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1 min-h-[44px] min-w-[44px] justify-end"
         >
           <span>Sync</span>
           <ArrowUpRight className="w-3.5 h-3.5" />
         </button>
       </div>
 
-      {/* Main Health Meter Vitality Gauge */}
+      {/* Main Vitality Meter Gauge */}
       <HealthMeterGauge
         metrics={metrics}
         onExploreBreakdown={() => onNavigateTab('steps')}
@@ -81,7 +106,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           <div className="flex items-baseline justify-between mb-2">
             <div>
-              <span className="text-3xl font-extrabold text-white tracking-tight tabular-nums">
+              <span className="text-3xl font-extrabold text-white tracking-tight tabular-nums font-mono">
                 {activity.steps.toLocaleString()}
               </span>
               <span className="text-xs text-slate-400 ml-1.5 font-medium">
@@ -126,7 +151,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           <div className="flex items-baseline justify-between mb-2">
             <div>
-              <span className="text-3xl font-extrabold text-white tracking-tight tabular-nums">
+              <span className="text-3xl font-extrabold text-white tracking-tight tabular-nums font-mono">
                 {remainingCalories}
               </span>
               <span className="text-xs text-slate-400 ml-1.5 font-medium">kcal left</span>
@@ -150,6 +175,19 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
         </div>
       </div>
+
+      {/* In-Feed Sponsored Health & Fitness Unit */}
+      <AdSenseBanner
+        format="responsive-feed"
+        config={adsenseConfig}
+        onOpenAdManager={onOpenAdManager}
+      />
+
+      {/* DISTINCTIVE FEATURE: Metabolic Fuel Partitioning (Grams of Fat vs Glycogen) */}
+      <MetabolicFuelWidget
+        activeCaloriesBurned={activity.activeCaloriesBurned}
+        cadenceSpm={activity.cadenceSpm}
+      />
 
       {/* Next Appointment Spotlight Card */}
       <div className="rounded-3xl bg-slate-900 border border-slate-800 p-5 shadow-xl">
@@ -186,7 +224,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
             <button
               onClick={() => onNavigateTab('appointments')}
-              className="px-3.5 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5 self-start sm:self-auto"
+              className="px-3.5 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5 self-start sm:self-auto min-h-[44px]"
             >
               <Video className="w-3.5 h-3.5" />
               <span>Join Call</span>
@@ -197,7 +235,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <p className="text-xs text-slate-400 mb-2">No appointments scheduled.</p>
             <button
               onClick={() => onNavigateTab('appointments')}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-medium"
+              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-medium min-h-[44px]"
             >
               Schedule Health Review
             </button>
@@ -205,30 +243,106 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         )}
       </div>
 
-      {/* Quick Launchpad Buttons */}
+      {/* Targeted Health Routines Spotlight Card */}
+      <div className="rounded-3xl bg-gradient-to-r from-slate-900 via-slate-900 to-cyan-950/40 border border-slate-800 p-5 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 flex items-center justify-center shrink-0">
+            <Dumbbell className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2 text-xs text-slate-400">
+              <span className="text-cyan-400 font-semibold uppercase tracking-wider">Health Promotion</span>
+              <span aria-hidden="true">·</span>
+              <span>5 Clinical Routines</span>
+            </div>
+            <h4 className="text-sm font-bold text-white mt-0.5">Post-Meal Walks, Zone 2 & ACSM 7-Min Workouts</h4>
+            <p className="text-xs text-slate-400 mt-0.5">Guided interval timers with real-time step and active calorie tracking.</p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => onNavigateTab('exercises')}
+          className="px-4 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs rounded-xl shadow-md transition-all shrink-0 min-h-[40px] flex items-center justify-center gap-1.5 self-start sm:self-auto"
+        >
+          <span>Explore Workouts</span>
+          <ChevronRight className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      {/* DISTINCTIVE PROTOCOL WORKFLOWS & LAUNCHPAD */}
       <div>
         <span className="text-[11px] font-semibold tracking-wider uppercase text-slate-400 block mb-2 px-1">
-          Quick Workflows
+          Specialized Pacing & Circadian Protocols
         </span>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-          <button
-            onClick={() => onNavigateTab('steps')}
-            className="p-3 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-2xl text-left transition-colors flex items-center gap-2.5"
-          >
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
-              <Play className="w-4 h-4 fill-current" />
-            </div>
-            <div>
-              <span className="text-xs font-semibold text-white block">Walk Workout</span>
-              <span className="text-[10px] text-slate-400 block">Pedometer</span>
-            </div>
-          </button>
+          {/* Metronome Cadence Pacer */}
+          {onOpenCadencePacer ? (
+            <button
+              type="button"
+              onClick={onOpenCadencePacer}
+              className="p-3 bg-slate-900 hover:bg-slate-850 border border-slate-800 hover:border-cyan-500/50 rounded-2xl text-left transition-colors flex items-center gap-2.5 min-h-[44px]"
+            >
+              <div className="w-8 h-8 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center shrink-0">
+                <Gauge className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="text-xs font-semibold text-white block">Cadence Pacer</span>
+                <span className="text-[10px] text-slate-400 block">Metronome</span>
+              </div>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => onNavigateTab('steps')}
+              className="p-3 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-2xl text-left transition-colors flex items-center gap-2.5 min-h-[44px]"
+            >
+              <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
+                <Play className="w-4 h-4 fill-current" />
+              </div>
+              <div>
+                <span className="text-xs font-semibold text-white block">Walk Mode</span>
+                <span className="text-[10px] text-slate-400 block">Pedometer</span>
+              </div>
+            </button>
+          )}
 
+          {/* Post-Meal Glucose Stroll */}
+          {onOpenPostMealWalk ? (
+            <button
+              type="button"
+              onClick={onOpenPostMealWalk}
+              className="p-3 bg-slate-900 hover:bg-slate-850 border border-slate-800 hover:border-emerald-500/50 rounded-2xl text-left transition-colors flex items-center gap-2.5 min-h-[44px]"
+            >
+              <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
+                <Timer className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="text-xs font-semibold text-white block">Post-Meal Stroll</span>
+                <span className="text-[10px] text-slate-400 block">Glucose Timer</span>
+              </div>
+            </button>
+          ) : (
+            <button
+              onClick={() => onNavigateTab('weekly')}
+              className="p-3 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-2xl text-left transition-colors flex items-center gap-2.5 min-h-[44px]"
+            >
+              <div className="w-8 h-8 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center shrink-0">
+                <TrendingUp className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="text-xs font-semibold text-white block">Weekly Trends</span>
+                <span className="text-[10px] text-slate-400 block">7-Day History</span>
+              </div>
+            </button>
+          )}
+
+          {/* Log Food */}
           <button
             onClick={() => onNavigateTab('calories')}
-            className="p-3 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-2xl text-left transition-colors flex items-center gap-2.5"
+            className="p-3 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-2xl text-left transition-colors flex items-center gap-2.5 min-h-[44px]"
           >
-            <div className="w-8 h-8 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center shrink-0">
               <Plus className="w-4 h-4" />
             </div>
             <div>
@@ -237,29 +351,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
           </button>
 
+          {/* Book Coach */}
           <button
             onClick={() => onNavigateTab('appointments')}
-            className="p-3 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-2xl text-left transition-colors flex items-center gap-2.5"
+            className="p-3 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-2xl text-left transition-colors flex items-center gap-2.5 min-h-[44px]"
           >
-            <div className="w-8 h-8 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center shrink-0">
               <Calendar className="w-4 h-4" />
             </div>
             <div>
-              <span className="text-xs font-semibold text-white block">Book Doctor</span>
-              <span className="text-[10px] text-slate-400 block">Specialist</span>
-            </div>
-          </button>
-
-          <button
-            onClick={() => onNavigateTab('wearables')}
-            className="p-3 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-2xl text-left transition-colors flex items-center gap-2.5"
-          >
-            <div className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center">
-              <Watch className="w-4 h-4" />
-            </div>
-            <div>
-              <span className="text-xs font-semibold text-white block">Sync Watch</span>
-              <span className="text-[10px] text-slate-400 block">Apple / Android</span>
+              <span className="text-xs font-semibold text-white block">Book Coach</span>
+              <span className="text-[10px] text-slate-400 block">Consultation</span>
             </div>
           </button>
         </div>

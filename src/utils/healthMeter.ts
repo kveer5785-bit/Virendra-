@@ -92,7 +92,7 @@ export function calculateHealthMeter(input: HealthMeterInput): HealthMeterMetric
   else if (overallScore >= 60) tier = 'Good';
   else tier = 'Needs Attention';
 
-  // Dynamic clinical recommendations
+  // Dynamic lifestyle and training guidance (non-medical estimations)
   const recommendations: string[] = [];
 
   if (steps < stepGoal) {
@@ -105,17 +105,17 @@ export function calculateHealthMeter(input: HealthMeterInput): HealthMeterMetric
 
   if (waterIntakeMl < waterGoalMl) {
     const def = waterGoalMl - waterIntakeMl;
-    recommendations.push(`Hydration is below optimal. Drink ${def}ml of electrolyte water before 8 PM.`);
+    recommendations.push(`Hydration is below your daily target. Drink ${def}ml of water before 8 PM.`);
   }
 
   if (restingHeartRateBpm <= 62) {
-    recommendations.push(`Resting heart rate (${restingHeartRateBpm} bpm) indicates strong aerobic conditioning.`);
+    recommendations.push(`Resting heart rate estimation (${restingHeartRateBpm} bpm) indicates good aerobic fitness.`);
   } else if (restingHeartRateBpm > 72) {
-    recommendations.push(`Cardio stress elevated (${restingHeartRateBpm} bpm). Consider 5 min box breathing.`);
+    recommendations.push(`Estimated heart rate is elevated (${restingHeartRateBpm} bpm). Consider light walking and recovery breathing.`);
   }
 
   if (sleepHours < 7.0) {
-    recommendations.push(`Prioritize 8h sleep tonight: your physical recovery index is running low (${sleepHours}h recorded).`);
+    recommendations.push(`Prioritize restful sleep tonight: your recovery index is lower than usual (${sleepHours}h recorded).`);
   }
 
   return {

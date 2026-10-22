@@ -1,0 +1,6 @@
+# PulseFit Robots Directives
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://pulsefit.health/sitemap.xml

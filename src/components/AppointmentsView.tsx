@@ -104,16 +104,16 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-cyan-400">
-                Clinical Telehealth & Coaching
+                Fitness & Performance Coaching
               </span>
               <span className="text-slate-500">·</span>
-              <span className="text-xs text-slate-400">Board Certified</span>
+              <span className="text-xs text-slate-400">Certified Specialists</span>
             </div>
             <h2 className="text-xl font-bold text-white tracking-tight mt-0.5">
-              Health & Specialist Appointments
+              Fitness & Movement Consultations
             </h2>
             <p className="text-xs text-slate-400 mt-1 max-w-xl">
-              Book certified cardiologists, sports physiologists, and dietitians who analyze your live step cadence, calorie deficits, and Health Meter vitality score.
+              Book certified exercise physiologists, strength coaches, and sports dietitians who analyze your step volume, caloric balance, and wearable trends.
             </p>
           </div>
 

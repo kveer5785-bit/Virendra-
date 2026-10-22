@@ -1,11 +1,12 @@
 /**
  * PulseFit Pedometer & Motion Sensor Engine
- * Works with real mobile accelerometer when available, plus fallback walker simulation.
+ * Optimized for mobile touch, Android & iOS browser sensors, and Screen Wake Lock.
  */
 
 export interface StepMotionCallback {
   onStep: (stepCount: number) => void;
   onCadenceUpdate?: (cadenceSpm: number) => void;
+  onError?: (errorMessage: string) => void;
 }
 
 export class PedometerEngine {
@@ -16,6 +17,15 @@ export class PedometerEngine {
   private callback: StepMotionCallback | null = null;
   private simulationInterval: number | null = null;
   private motionHandler: ((event: DeviceMotionEvent) => void) | null = null;
+  
+  // Gravity isolation filter states
+  private gravity = { x: 0, y: 9.8, z: 0 };
+  private alpha = 0.8; // Low-pass filter coefficient for gravity
+  private stepThreshold = 2.0; // Dynamic acceleration peak threshold in m/s²
+  private minStepIntervalMs = 280; // Max cadence ~214 steps/min
+  
+  // Screen Wake Lock handle (prevents mobile screen timeout during active walking)
+  private wakeLockSentinel: unknown = null;
 
   constructor(initialSteps = 0) {
     this.stepCount = initialSteps;
@@ -27,6 +37,10 @@ export class PedometerEngine {
 
   public getStepCount() {
     return this.stepCount;
+  }
+
+  public getIsListening() {
+    return this.isListening;
   }
 
   /**
@@ -55,32 +69,83 @@ export class PedometerEngine {
   }
 
   /**
-   * Start listening to device accelerometer
+   * Request Screen Wake Lock so mobile screen stays awake during walking workout
+   */
+  public async requestWakeLock(): Promise<boolean> {
+    if (typeof navigator !== 'undefined' && 'wakeLock' in navigator) {
+      try {
+        const nav = navigator as unknown as {
+          wakeLock: {
+            request: (type: 'screen') => Promise<unknown>;
+          };
+        };
+        this.wakeLockSentinel = await nav.wakeLock.request('screen');
+        return true;
+      } catch (err) {
+        console.warn('Screen Wake Lock request failed:', err);
+        return false;
+      }
+    }
+    return false;
+  }
+
+  public releaseWakeLock() {
+    if (this.wakeLockSentinel) {
+      try {
+        const sentinel = this.wakeLockSentinel as { release?: () => Promise<void> };
+        sentinel.release?.();
+      } catch (e) {
+        console.warn('Error releasing wake lock:', e);
+      }
+      this.wakeLockSentinel = null;
+    }
+  }
+
+  /**
+   * Start listening to device accelerometer with gravity separation
    */
   public start(callback: StepMotionCallback) {
     this.callback = callback;
     this.isListening = true;
 
-    if (typeof window !== 'undefined' && 'DeviceMotionEvent' in window) {
-      let lastMagnitude = 9.8;
-      const threshold = 2.4; // Acceleration peak threshold in m/s² above gravity
+    // Try to acquire Wake Lock to prevent phone screen sleep while walking
+    this.requestWakeLock();
 
+    if (typeof window !== 'undefined' && 'DeviceMotionEvent' in window) {
       this.motionHandler = (event: DeviceMotionEvent) => {
         if (!this.isListening) return;
 
-        const acc = event.accelerationIncludingGravity;
-        if (!acc || acc.x === null || acc.y === null || acc.z === null) return;
+        const rawAcc = event.accelerationIncludingGravity;
+        if (!rawAcc || rawAcc.x === null || rawAcc.y === null || rawAcc.z === null) return;
 
-        const magnitude = Math.sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
-        const delta = Math.abs(magnitude - lastMagnitude);
-        lastMagnitude = magnitude;
+        // 1. Isolate gravity using low-pass filter
+        this.gravity.x = this.alpha * this.gravity.x + (1 - this.alpha) * rawAcc.x;
+        this.gravity.y = this.alpha * this.gravity.y + (1 - this.alpha) * rawAcc.y;
+        this.gravity.z = this.alpha * this.gravity.z + (1 - this.alpha) * rawAcc.z;
+
+        // 2. Linear acceleration without gravity
+        const linX = rawAcc.x - this.gravity.x;
+        const linY = rawAcc.y - this.gravity.y;
+        const linZ = rawAcc.z - this.gravity.z;
+
+        // 3. Vector magnitude
+        const linearMagnitude = Math.sqrt(linX * linX + linY * linY + linZ * linZ);
 
         const now = Date.now();
-        // Step filter: delta exceeds threshold and at least 280ms since previous step (max 214 spm)
-        if (delta > threshold && now - this.lastStepTimestamp > 280) {
+        // 4. Refractory step detection filter
+        if (linearMagnitude > this.stepThreshold && now - this.lastStepTimestamp > this.minStepIntervalMs) {
           this.lastStepTimestamp = now;
           this.stepCount += 1;
           this.recordStepTime(now);
+
+          // Subtle Android haptic feedback if supported
+          if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+            try {
+              navigator.vibrate(8);
+            } catch {
+              // Ignore haptic errors on unsupported devices
+            }
+          }
 
           if (this.callback) {
             this.callback.onStep(this.stepCount);
@@ -92,12 +157,15 @@ export class PedometerEngine {
         window.addEventListener('devicemotion', this.motionHandler, { passive: true });
       } catch (e) {
         console.warn('Failed to bind devicemotion:', e);
+        this.callback?.onError?.('Accelerometer sensor not accessible in current context.');
       }
+    } else {
+      this.callback?.onError?.('Device motion sensor not supported in this browser.');
     }
   }
 
   /**
-   * Start a smooth real-time walking simulator (e.g. for desktop or stationary testing)
+   * Start a smooth real-time walking simulator (for desktop or testing)
    */
   public startSimulation(intervalMs = 950) {
     if (this.simulationInterval) return;
@@ -143,6 +211,8 @@ export class PedometerEngine {
   public stop() {
     this.isListening = false;
     this.stopSimulation();
+    this.releaseWakeLock();
+
     if (this.motionHandler && typeof window !== 'undefined') {
       window.removeEventListener('devicemotion', this.motionHandler);
       this.motionHandler = null;

@@ -1,0 +1,42 @@
+{
+  "name": "PulseFit - Daily Step Counter & Health Meter",
+  "short_name": "PulseFit",
+  "description": "Evidence-based movement, daily step counter, cadence pacer, and metabolic health tracker designed to run seamlessly on Google Chrome and mobile browsers.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "fitness", "lifestyle", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Daily Steps",
+      "url": "/#steps",
+      "description": "View daily step progress and start live pedometer"
+    },
+    {
+      "name": "Cadence Pacer",
+      "url": "/#cadence",
+      "description": "Launch Web Audio cadence metronome"
+    },
+    {
+      "name": "Calorie Diary",
+      "url": "/#calories",
+      "description": "Log meals and track macronutrients"
+    }
+  ]
+}

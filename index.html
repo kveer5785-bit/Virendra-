@@ -3,25 +3,75 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <title>PulseFit - Health Meter & Step Tracker</title>
-    <meta name="description" content="Cross-platform mobile health tracker for Android and iOS with daily step counting, composite Health Meter, calorie tracking, wearable sync, and specialist appointments." />
-    <meta property="og:title" content="PulseFit - Health Meter & Step Tracker" />
-    <meta property="og:description" content="Cross-platform mobile health tracker for Android and iOS with daily step counting, composite Health Meter, calorie tracking, wearable sync, and specialist appointments." />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
+    <title>PulseFit - Daily Step Counter, Health Meter & Calorie Tracker</title>
+    <meta name="description" content="Mobile-friendly daily step tracker, composite Health Vitality Meter, calorie & macro diary, and wearable sync for Android & iOS. Privacy-first with local storage." />
+    <meta name="keywords" content="step tracker, pedometer, health meter, calorie counter, macro tracker, wearable sync, Apple Watch, Pixel Watch, Garmin, PWA, fitness coaching" />
+    <meta name="author" content="PulseFit Health" />
+    <link rel="canonical" href="https://pulsefit.health" />
 
-    <!-- Mobile App & PWA Settings -->
-    <meta name="theme-color" content="#090d16" />
+    <!-- Google Search Console Verification Meta Tag -->
+    <!-- Replace GSC_VERIFICATION_TOKEN with the token provided by Google Search Console -->
+    <meta name="google-site-verification" content="GSC_VERIFICATION_TOKEN" />
+
+    <!-- OpenGraph Social Metadata -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="PulseFit - Daily Step Counter, Health Meter & Calorie Tracker" />
+    <meta property="og:description" content="Mobile-friendly daily step tracker, composite Health Vitality Meter, calorie & macro diary, and wearable sync for Android & iOS." />
+    <meta property="og:url" content="https://pulsefit.health" />
+    <meta property="og:site_name" content="PulseFit" />
+    <meta property="og:image" content="https://pulsefit.health/og-card.png" />
+
+    <!-- Twitter / X Card Metadata -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="PulseFit - Daily Step Counter, Health Meter & Calorie Tracker" />
+    <meta name="twitter:description" content="Mobile-friendly daily step tracker, composite Health Vitality Meter, calorie & macro diary, and wearable sync for Android & iOS." />
+    <meta name="twitter:image" content="https://pulsefit.health/og-card.png" />
+
+    <!-- Mobile App & PWA Settings for Chrome & Modern Browsers -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#020617" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="PulseFit" />
 
+    <!-- Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Schema.org JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "PulseFit",
+      "url": "https://pulsefit.health",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "All (Web, Android, iOS)",
+      "description": "Cross-platform mobile fitness tracking web application featuring daily step tracking, composite health vitality scores, calorie logging, and wearable synchronization.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Real-time mobile accelerometer pedometer",
+        "Screen Wake Lock for walking workouts",
+        "Composite Vitality Health Meter",
+        "7-day weekly progress trends & streaks",
+        "Calorie & macronutrient pacing",
+        "Client-side private storage with export & restore",
+        "Evidence-based fitness education library"
+      ]
+    }
+    </script>
+
+    <!-- Google AdSense Automated Ads & Site Verification Tag -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3718193681856121"
+     crossorigin="anonymous"></script>
   </head>
-  <body class="bg-slate-950 text-slate-100 antialiased selection:bg-emerald-500/30 selection:text-emerald-200">
+  <body class="bg-slate-950 text-slate-100 antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

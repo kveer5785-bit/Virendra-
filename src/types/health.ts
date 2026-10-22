@@ -2,6 +2,16 @@
  * PulseFit Core Domain Types
  */
 
+export interface AdSenseConfig {
+  publisherId: string; // e.g. "ca-pub-1234567890123456"
+  leaderboardSlotId: string;
+  articleSlotId: string;
+  sidebarSlotId: string;
+  enableAutoAds: boolean;
+  testMode: boolean; // default true for safe preview
+  adUnitsEnabled: boolean; // master toggle
+}
+
 export interface UserProfile {
   name: string;
   age: number;
@@ -11,6 +21,8 @@ export interface UserProfile {
   dailyCalorieBudget: number;
   dailyWaterGoalMl: number;
   activeWearableId: string;
+  gaMeasurementId?: string;
+  adsenseConfig?: AdSenseConfig;
 }
 
 export interface HourlyStepRecord {
@@ -19,7 +31,7 @@ export interface HourlyStepRecord {
 }
 
 export interface DailyActivity {
-  date: string; // YYYY-MM-DD
+  date: string; // YYYY-MM-DD in local time
   steps: number;
   stepGoal: number;
   distanceKm: number;
@@ -28,6 +40,19 @@ export interface DailyActivity {
   hourlySteps: HourlyStepRecord[];
   isLiveTracking: boolean;
   cadenceSpm: number;
+}
+
+export interface DayHistoryRecord {
+  date: string; // YYYY-MM-DD
+  dayLabel: string; // Mon, Tue, etc.
+  steps: number;
+  stepGoal: number;
+  distanceKm: number;
+  activeCalories: number;
+  caloriesConsumed: number;
+  waterIntakeMl: number;
+  vitalityScore: number;
+  completed: boolean;
 }
 
 export interface HealthMeterMetrics {
@@ -101,7 +126,7 @@ export interface HealthAppointment {
   specialistName: string;
   specialistTitle: string;
   consultationType: 'video' | 'in_person' | 'wearable_review';
-  focusArea: 'Step & Cardio Optimization' | 'Calorie Deficit & Macros' | 'Wearable Data Review' | 'Recovery & Sleep' | 'Comprehensive Health Check';
+  focusArea: 'Step & Cardio Optimization' | 'Calorie Deficit & Macros' | 'Wearable Data Review' | 'Recovery & Sleep' | 'Comprehensive Fitness Assessment';
   date: string;
   timeSlot: string;
   status: 'confirmed' | 'completed' | 'cancelled';
@@ -111,4 +136,62 @@ export interface HealthAppointment {
   createdAt: string;
 }
 
-export type ActiveTab = 'dashboard' | 'steps' | 'calories' | 'appointments' | 'wearables';
+export interface FitnessArticle {
+  id: string;
+  title: string;
+  slug: string;
+  category: 'Movement' | 'Nutrition' | 'Recovery' | 'Wearables';
+  readTime: string;
+  summary: string;
+  publishedDate: string;
+  content: string[];
+  actionableTakeaways: string[];
+  author: string;
+}
+
+export interface ExerciseRoutine {
+  id: string;
+  title: string;
+  subtitle: string;
+  category: 'Cardio' | 'Metabolic' | 'Mobility' | 'Strength' | 'Recovery';
+  durationMins: number;
+  intensity: 'Low' | 'Moderate' | 'High';
+  targetHeartRateZone: string;
+  caloriesBurnEstimate: number;
+  stepsEstimate: number;
+  primaryBenefit: string;
+  scientificRationale: string;
+  intervals: {
+    name: string;
+    durationSecs: number;
+    instruction: string;
+    formCue: string;
+  }[];
+}
+
+export interface LoggedWorkout {
+  id: string;
+  routineTitle: string;
+  category: string;
+  durationMins: number;
+  caloriesBurned: number;
+  stepsContributed: number;
+  completedAt: string;
+  intensity: 'Low' | 'Moderate' | 'High';
+}
+
+export type ActiveTab =
+  | 'dashboard'
+  | 'steps'
+  | 'exercises'
+  | 'weekly'
+  | 'calories'
+  | 'appointments'
+  | 'wearables'
+  | 'education'
+  | 'about'
+  | 'contact'
+  | 'privacy'
+  | 'disclaimer'
+  | 'terms';
+
